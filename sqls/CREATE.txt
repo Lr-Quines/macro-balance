@@ -1,0 +1,68 @@
+CREATE DATABASE MacroBalance;
+
+CREATE TABLE MB_User (
+    Id VARCHAR(36) NOT NULL,
+    User VARCHAR(10) NOT NULL,
+    Password VARCHAR(500) NOT NULL,
+    Email VARCHAR(250) NOT NULL,
+    
+    CONSTRAINT PK_Id PRIMARY KEY (Id)
+);
+
+CREATE TABLE MB_UnidadeMedida (
+    Id VARCHAR(36) NOT NULL,
+    Nome VARCHAR(50) NOT NULL,
+    Simbolo VARCHAR(5) NOT NULL,
+    UsuarioCriador VARCHAR(36) NOT NULL,
+    
+    CONSTRAINT PK_Id PRIMARY KEY (Id),
+    CONSTRAINT FK_User_UnidadeMedida FOREIGN KEY (UsuarioCriador) REFERENCES MB_User (Id)
+);
+
+CREATE TABLE MB_Alimento (
+    Id VARCHAR(36) NOT NULL,
+    Nome VARCHAR(50) NOT NULL,
+    Marca VARCHAR(50) NULL,
+    UsuarioCriador VARCHAR(36) NOT NULL,
+    Caloria DECIMAL(37,8) NOT NULL,
+    Carboidrato DECIMAL(37,8) NOT NULL,
+    Proteina DECIMAL(37,8) NOT NULL,
+    Gordura DECIMAL(37,8) NOT NULL,
+    UnidadeMedida VARCHAR(36) NOT NULL,
+    Dose DECIMAL(37,8) NOT NULL,
+
+    CONSTRAINT PK_Id PRIMARY KEY (Id),
+    CONSTRAINT FK_User_Alimento FOREIGN KEY (UsuarioCriador) REFERENCES MB_User (Id),
+    CONSTRAINT FK_UnidadeMedida_Alimento FOREIGN KEY (UnidadeMedida) REFERENCES MB_UnidadeMedida (Id)
+);
+
+CREATE TABLE MB_PlanoAlimentar (
+    Id VARCHAR(36) NOT NULL,
+    Nome VARCHAR(50) NOT NULL,
+    Descricao VARCHAR(5000) NULL,
+    UsuarioCriador VARCHAR(36) NOT NULL,
+    
+    CONSTRAINT PK_Id PRIMARY KEY (Id),
+    CONSTRAINT FK_User_PlanoAlimentar FOREIGN KEY (UsuarioCriador) REFERENCES MB_User (Id)
+);
+
+CREATE TABLE MB_SessaoAlimentar (
+    Id VARCHAR(36) NOT NULL,
+    Nome VARCHAR(50) NOT NULL,
+    PlanoAlimentarId VARCHAR(36) NOT NULL,
+    Ordem INTEGER NOT NULL,
+    
+    CONSTRAINT PK_Id PRIMARY KEY (Id),
+    CONSTRAINT FK_PlanoAlimentar_SessaoAlimentar FOREIGN KEY (PlanoAlimentarId) REFERENCES MB_PlanoAlimentar (Id)
+);
+
+CREATE TABLE MB_AlimentoSessao (
+    Id VARCHAR(36) NOT NULL,
+    SessaoAlimentarId VARCHAR(36) NOT NULL,
+    AlimentoId VARCHAR(36) NOT NULL,
+    Dose DECIMAL(37,8) NOT NULL,
+	
+    CONSTRAINT PK_Id PRIMARY KEY (Id),
+    CONSTRAINT FK_SessaoAlimentar_AlimentoSessao FOREIGN KEY (SessaoAlimentarId) REFERENCES MB_SessaoAlimentar (Id),
+    CONSTRAINT FK_Alimento_AlimentoSessao FOREIGN KEY (AlimentoId) REFERENCES MB_Alimento (Id)
+);
